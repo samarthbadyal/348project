@@ -1,0 +1,40 @@
+/* Main container styles */
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full screen height */
+    text-align: center;
+
+    color: #fff;
+  }
+  
+  /* Title styles */
+  .welcome-title {
+    font-size: 3rem; /* Large title font */
+    margin-bottom: 2rem; /* Space below the title */
+    font-weight: 700;
+  }
+  
+  /* Button styles */
+  .league-button {
+    font-size: 2rem; /* Large button font */
+    padding: 1rem 2rem; /* Padding inside the button */
+    background: #ff6b6b; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none;
+    border-radius: 0.5rem; /* Rounded corners */
+    cursor: pointer;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Animation on hover */
+  }
+  
+  .league-button:hover {
+    transform: scale(1.1); /* Slightly enlarge button on hover */
+    background: #ff4757; /* Darker shade on hover */
+  }
+  
+  .league-button:active {
+    transform: scale(0.95); /* Shrink slightly on click */
+  }

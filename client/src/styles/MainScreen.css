@@ -1,0 +1,80 @@
+.main-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    padding: 2rem 1rem; /* Reduce horizontal padding */
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%; /* Match form width */
+    max-width: 40rem; /* Consistent with form width */
+    justify-content: space-between; /* Align buttons evenly */
+  }
+  
+  .tabs button {
+    padding: 0.75rem 1rem; /* Reduce padding */
+    flex: 1; /* Make buttons equal width */
+    text-align: center;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: background 0.3s;
+  }
+  
+  .tabs button.active {
+    background: #0056b3;
+  }
+  
+  .tabs button:hover {
+    background: #0056b3;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%; /* Match parent width */
+    max-width: 40rem; /* Consistent with tabs */
+  }
+  
+  .form input,
+  .form select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    width: 100%; /* Full-width alignment */
+    appearance: none; /* Remove default browser styles */
+    background-color: white;
+    color: #333;
+  }
+  
+  .form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23333' d='M5 6L0 0h10L5 6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
+  
+  .form button {
+    padding: 1rem;
+    font-size: 1.2rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%; /* Full-width alignment */
+  }
+  
+  .form button:hover {
+    background: #218838;
+  }

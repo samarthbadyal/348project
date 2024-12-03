@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600&display=swap');
+
+
+body {
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    height: 100vh; /* Full screen height */
+    background-color: hsl(218, 57%, 38%); /* Gradient background */
+    color: #fff;
+    font-family: 'Poppins', sans-serif; 
+  }
+
+  * {
+    font-family: 'Poppins', sans-serif; 
+    box-sizing: border-box;
+  }
+
+
+html {
+    font-size: 1vw;
+
+  }
