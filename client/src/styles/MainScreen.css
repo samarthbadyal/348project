@@ -159,3 +159,34 @@
   border-bottom: 1px solid #fff;
   padding-bottom: 1rem;
 }
+
+
+.list-item button {
+  font-size: 1rem;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.controls select {
+  font-size: 1rem;
+}
+
+.controls input {
+  font-size: 1rem;
+}
+
+.controls label {
+  display: flex;
+  gap: 0.25rem;
+}
+
+
+.controls {
+  display: flex;
+  gap: 1rem;
+}
