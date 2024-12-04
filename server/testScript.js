@@ -1,5 +1,5 @@
 const axios = require('axios');
-const API_URL = 'http://localhost:5001/api'; // Update with your actual backend API URL
+const API_URL = 'http://localhost:5001/api'; 
 
 async function createTeam(name, city) {
   try {

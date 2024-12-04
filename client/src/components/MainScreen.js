@@ -5,14 +5,14 @@ import { API_URL } from '../config';
 import { AuthContext } from '../AuthContext';
 
 export default function MainScreen() {
-  const [selectedTab, setSelectedTab] = useState('team'); // Tabs: 'team', 'player', 'matchup', 'viewTeams', 'viewPlayers', 'viewMatchups'
-  const [formData, setFormData] = useState({}); // Form data
-  const [teams, setTeams] = useState([]); // Fetch existing teams
-  const [players, setPlayers] = useState([]); // Fetch existing players
-  const [matchups, setMatchups] = useState([]); // Fetch existing matchups
-  const [errors, setErrors] = useState({}); // To store validation errors
-  const [editMode, setEditMode] = useState(false); // To toggle between add and edit
-  const [editId, setEditId] = useState(null); // ID of the entity being edited
+  const [selectedTab, setSelectedTab] = useState('team'); 
+  const [formData, setFormData] = useState({}); 
+  const [teams, setTeams] = useState([]);
+  const [players, setPlayers] = useState([]); 
+  const [matchups, setMatchups] = useState([]); 
+  const [errors, setErrors] = useState({});
+  const [editMode, setEditMode] = useState(false); 
+  const [editId, setEditId] = useState(null); 
   const [simulatingGameIds, setSimulatingGameIds] = useState([]); 
   const [playerStats, setPlayerStats] = useState([]);
   const [sortField, setSortField] = useState('points');
@@ -243,7 +243,7 @@ const handleViewStats = (matchup) => {
   const getMinDateTimeLocal = () => {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const month = String(now.getMonth() + 1).padStart(2, '0'); 
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
