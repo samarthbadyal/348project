@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
+// models/Game.js
 
+const mongoose = require('mongoose');
 
 const GameSchema = new mongoose.Schema({
   homeTeam: {
@@ -42,9 +43,14 @@ const GameSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  simulated: {
+    type: Boolean,
+    default: false
+  },
   playerStats: [
     {
       player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
+      team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
       points: { type: Number, default: 0 },
       assists: { type: Number, default: 0 },
       rebounds: { type: Number, default: 0 },

@@ -4,6 +4,7 @@
     align-items: center;
     font-family: Arial, sans-serif;
     padding: 2rem 1rem; /* Reduce horizontal padding */
+    height: 100vh;
   }
   
   .tabs {
@@ -11,7 +12,7 @@
     gap: 1rem;
     margin-bottom: 2rem;
     width: 100%; /* Match form width */
-    max-width: 40rem; /* Consistent with form width */
+    max-width: 50rem;
     justify-content: space-between; /* Align buttons evenly */
   }
   
@@ -78,3 +79,69 @@
   .form button:hover {
     background: #218838;
   }
+
+  /* MainScreen.css */
+
+.stats-table {
+  margin-top: 1.5rem;
+}
+
+.stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th,
+.stats-table td {
+  border: 1px solid #0056b3;
+  padding: 0.5rem;
+}
+
+.stats-table th {
+  background-color: #0056b3;
+  text-align: left;
+}
+
+.player-stats {
+  margin-top: 0.75rem;
+  background-color: #0056b3;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.player-stats p {
+  margin: 0.5rem 0;
+}
+
+
+.leaderboard {
+  margin-top: 1.25rem;
+}
+
+.controls {
+  margin-bottom: 1rem;
+}
+
+.controls label {
+  margin-right: 1rem;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th,
+.stats-table td {
+  border: 1px solid #0056b3;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.stats-table th {
+  background-color: #0056b3;
+}
+
+.stats-table tr:nth-child(even) {
+  background-color: #0056b3;
+}

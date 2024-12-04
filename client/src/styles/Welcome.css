@@ -38,3 +38,10 @@
   .league-button:active {
     transform: scale(0.95); /* Shrink slightly on click */
   }
+
+  .welcome-image {
+    max-width: 15rem;
+    height: auto;
+    margin-top: 2rem;
+    object-fit: contain;
+  }

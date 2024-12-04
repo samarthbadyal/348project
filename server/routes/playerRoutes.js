@@ -3,6 +3,130 @@ const router = express.Router();
 const Player = require('../models/Player');
 const Team = require('../models/Team');
 
+router.get('/stats', async (req, res) => {
+  try {
+    const { sortBy = 'points', perGame = 'false', order = 'desc' } = req.query;
+
+    const validFields = ['points', 'assists', 'rebounds', 'steals', 'blocks'];
+    if (!validFields.includes(sortBy)) {
+      return res.status(400).json({ error: 'Invalid sortBy field.' });
+    }
+
+    const sortOrder = order === 'asc' ? 1 : -1;
+
+    if (perGame === 'true') {
+      const players = await Player.aggregate([
+        {
+          $addFields: {
+            perGameStats: {
+              points: {
+                $divide: [
+                  { $ifNull: ['$stats.points', 0] },
+                  {
+                    $cond: [
+                      { $gt: ['$stats.gamesPlayed', 0] },
+                      '$stats.gamesPlayed',
+                      1,
+                    ],
+                  },
+                ],
+              },
+              assists: {
+                $divide: [
+                  { $ifNull: ['$stats.assists', 0] },
+                  {
+                    $cond: [
+                      { $gt: ['$stats.gamesPlayed', 0] },
+                      '$stats.gamesPlayed',
+                      1,
+                    ],
+                  },
+                ],
+              },
+              rebounds: {
+                $divide: [
+                  { $ifNull: ['$stats.rebounds', 0] },
+                  {
+                    $cond: [
+                      { $gt: ['$stats.gamesPlayed', 0] },
+                      '$stats.gamesPlayed',
+                      1,
+                    ],
+                  },
+                ],
+              },
+              steals: {
+                $divide: [
+                  { $ifNull: ['$stats.steals', 0] },
+                  {
+                    $cond: [
+                      { $gt: ['$stats.gamesPlayed', 0] },
+                      '$stats.gamesPlayed',
+                      1,
+                    ],
+                  },
+                ],
+              },
+              blocks: {
+                $divide: [
+                  { $ifNull: ['$stats.blocks', 0] },
+                  {
+                    $cond: [
+                      { $gt: ['$stats.gamesPlayed', 0] },
+                      '$stats.gamesPlayed',
+                      1,
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        {
+          $sort: { [`perGameStats.${sortBy}`]: sortOrder },
+        },
+        {
+          $lookup: {
+            from: 'teams',
+            localField: 'team',
+            foreignField: '_id',
+            as: 'team',
+          },
+        },
+        {
+          $unwind: {
+            path: '$team',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            firstName: 1,
+            lastName: 1,
+            team: { name: 1, city: 1 },
+            stats: 1,
+            perGameStats: 1, // Ensure perGameStats is included
+          },
+        },
+      ]);
+    
+      return res.json(players);
+    } else {
+      const players = await Player.find()
+        .populate('team', 'name city')
+        .sort({ [`stats.${sortBy}`]: sortOrder });
+
+      return res.json(players);
+    }
+  } catch (error) {
+    console.error('Error fetching player stats:', {
+      message: error.message,
+      stack: error.stack,
+    });
+    return res.status(500).json({ error: 'Error fetching player stats' });
+  }
+});
+
 // Get all players
 router.get('/', async (req, res) => {
   try {
@@ -82,5 +206,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error deleting the player' });
   }
 });
+
+
 
 module.exports = router;

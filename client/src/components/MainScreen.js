@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import '../styles/MainScreen.css';
 import { API_URL } from '../config';
+import { AuthContext } from '../AuthContext';
 
 export default function MainScreen() {
   const [selectedTab, setSelectedTab] = useState('team'); // Tabs: 'team', 'player', 'matchup', 'viewTeams', 'viewPlayers', 'viewMatchups'
@@ -12,12 +13,77 @@ export default function MainScreen() {
   const [errors, setErrors] = useState({}); // To store validation errors
   const [editMode, setEditMode] = useState(false); // To toggle between add and edit
   const [editId, setEditId] = useState(null); // ID of the entity being edited
+  const [simulatingGameIds, setSimulatingGameIds] = useState([]); 
+  const [playerStats, setPlayerStats] = useState([]);
+  const [sortField, setSortField] = useState('points');
+  const [perGame, setPerGame] = useState(false);
+  const [sortOrder, setSortOrder] = useState('desc');
+  const {signOut} = useContext(AuthContext);
 
   useEffect(() => {
     fetchTeams();
     fetchPlayers();
     fetchMatchups();
   }, []);
+
+
+
+
+  const [selectedMatchupStats, setSelectedMatchupStats] = useState(null);
+  const [selectedPlayerStats, setSelectedPlayerStats] = useState(null); 
+
+  const fetchPlayerStats = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/players/stats`, {
+        params: {
+          sortBy: sortField,
+          perGame: perGame.toString(),
+          order: sortOrder,
+        },
+      });
+      setPlayerStats(response.data);
+    } catch (error) {
+      console.error('Error fetching player stats:', error);
+    }
+  };
+  useEffect(() => {
+    if (selectedTab === 'leaderboard') {
+      fetchPlayerStats();
+    }
+  }, [selectedTab, sortField, perGame, sortOrder]);
+  const handleViewPlayerStats = (player) => {
+    if (selectedPlayerStats && selectedPlayerStats._id === player._id) {
+      // If the player is already selected, deselect
+      setSelectedPlayerStats(null);
+    } else {
+      setSelectedPlayerStats(player);
+    }
+  };
+
+
+  const handleSimulate = async (gameId) => {
+    setSimulatingGameIds((prev) => [...prev, gameId]); // Add gameId to simulating list
+    try {
+      await axios.post(`${API_URL}/matchups/${gameId}/simulate`);
+      alert('Game simulated successfully!');
+      fetchMatchups(); // Refresh matchups to get updated data
+      fetchPlayers();  // Refresh players to get updated stats
+    } catch (error) {
+      console.error('Error simulating game:', error);
+      alert('Error simulating game.');
+    } finally {
+      setSimulatingGameIds((prev) => prev.filter((id) => id !== gameId)); // Remove gameId from simulating list
+    }
+  };
+
+const handleViewStats = (matchup) => {
+  if (selectedMatchupStats && selectedMatchupStats._id === matchup._id) {
+    // If already viewing, toggle off
+    setSelectedMatchupStats(null);
+  } else {
+    setSelectedMatchupStats(matchup);
+  }
+};
 
   const fetchTeams = async () => {
     try {
@@ -200,6 +266,7 @@ export default function MainScreen() {
     <div className="main-screen">
       <h1>Simulated Basketball Association</h1>
       <div className="tabs">
+
         <button onClick={() => handleTabChange('team')} className={selectedTab === 'team' ? 'active' : ''}>
           {editMode ? 'Edit Team' : 'Create Team'}
         </button>
@@ -227,6 +294,13 @@ export default function MainScreen() {
         >
           View Matchups
         </button>
+        <button
+          onClick={() => handleTabChange('leaderboard')}
+          className={selectedTab === 'leaderboard' ? 'active' : ''}
+        >
+          Player Stats
+        </button>
+        <button onClick={signOut}>Log out</button>
       </div>
 
       {(selectedTab === 'team' || selectedTab === 'player' || selectedTab === 'matchup') && (
@@ -378,40 +452,53 @@ export default function MainScreen() {
         </form>
       )}
 
-      {selectedTab === 'viewTeams' && (
-        <div className="list">
-          <h2>Teams</h2>
-          {teams.map((team) => (
-            <div key={team._id} className="list-item">
-              <p>
-                <strong>{team.name}</strong> - {team.city}
-              </p>
-              <button onClick={() => handleEdit(team, 'team')}>Edit</button>
-              <button onClick={() => handleDelete(team._id, 'team')}>Delete</button>
-            </div>
-          ))}
-        </div>
-      )}
+{selectedTab === 'viewTeams' && (
+  <div className="list">
+    <h2>Teams</h2>
+    {teams.map((team) => (
+      <div key={team._id} className="list-item">
+        <p>
+          <strong>{team.name}</strong> - {team.city} | Wins: {team.wins} | Losses: {team.losses}
+        </p>
+        <button onClick={() => handleEdit(team, 'team')}>Edit</button>
+        {/* <button onClick={() => handleDelete(team._id, 'team')}>Delete</button> */}
+      </div>
+    ))}
+  </div>
+)}
 
-      {selectedTab === 'viewPlayers' && (
-        <div className="list">
-          <h2>Players</h2>
-          {players.map((player) => (
-            <div key={player._id} className="list-item">
-              <p>
-                <strong>
-                  {player.firstName} {player.lastName}
-                </strong>{' '}
-                - {player.position} - Team: {player.team?.name || 'N/A'}
-              </p>
-              <button onClick={() => handleEdit(player, 'player')}>Edit</button>
-              <button onClick={() => handleDelete(player._id, 'player')}>Delete</button>
-            </div>
-          ))}
-        </div>
-      )}
+{selectedTab === 'viewPlayers' && (
+  <div className="list">
+    <h2>Players</h2>
+    {players.map((player) => (
+      <div key={player._id} className="list-item">
+        <p>
+          <strong>
+            {player.firstName} {player.lastName}
+          </strong>{' '}
+          - {player.position} - Team: {player.team?.name || 'N/A'}
+        </p>
+        <button onClick={() => handleEdit(player, 'player')}>Edit</button>
+        {/* <button onClick={() => handleDelete(player._id, 'player')}>Delete</button> */}
+        <button onClick={() => handleViewPlayerStats(player)}>View Stats</button>
 
-      {selectedTab === 'viewMatchups' && (
+        {selectedPlayerStats && selectedPlayerStats._id === player._id && (
+          <div className="player-stats">
+            <h3>Player Stats</h3>
+            <p>Games Played: {player.stats?.gamesPlayed || 0}</p>
+            <p>Points: {player.stats?.points || 0}</p>
+            <p>Assists: {player.stats?.assists || 0}</p>
+            <p>Rebounds: {player.stats?.rebounds || 0}</p>
+            <p>Steals: {player.stats?.steals || 0}</p>
+            <p>Blocks: {player.stats?.blocks || 0}</p>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
+{selectedTab === 'viewMatchups' && (
         <div className="list">
           <h2>Matchups</h2>
           {matchups.map((matchup) => (
@@ -422,12 +509,178 @@ export default function MainScreen() {
                 </strong>{' '}
                 - {new Date(matchup.date).toLocaleString()} at {matchup.location}
               </p>
-              <button onClick={() => handleEdit(matchup, 'matchup')}>Edit</button>
-              <button onClick={() => handleDelete(matchup._id, 'matchup')}>Delete</button>
+              {matchup.simulated && (
+                <p>
+                  Score:{' '}
+                  {matchup.homeTeamScore > matchup.awayTeamScore ? (
+                    <strong>
+                      {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
+                    </strong>
+                  ) : (
+                    <>
+                      {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
+                    </>
+                  )}{' '}
+                  -{' '}
+                  {matchup.awayTeamScore > matchup.homeTeamScore ? (
+                    <strong>
+                      {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
+                    </strong>
+                  ) : (
+                    <>
+                      {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
+                    </>
+                  )}
+                </p>
+              )}
+              {!matchup.simulated && (
+                <>
+                  <button onClick={() => handleEdit(matchup, 'matchup')}>Edit</button>
+                  <button onClick={() => handleDelete(matchup._id, 'matchup')}>Delete</button>
+                </>
+              )}
+              {!matchup.simulated ? (
+                <button
+                  onClick={() => handleSimulate(matchup._id)}
+                  disabled={simulatingGameIds.includes(matchup._id)}
+                >
+                  {simulatingGameIds.includes(matchup._id) ? 'Loading...' : 'Simulate'}
+                </button>
+              ) : (
+                <button onClick={() => handleViewStats(matchup)}>View Stats</button>
+              )}
+
+              {selectedMatchupStats && selectedMatchupStats._id === matchup._id && (
+                <div className="stats-table">
+                  <h3>Player Stats</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Points</th>
+                        <th>Assists</th>
+                        <th>Rebounds</th>
+                        <th>Steals</th>
+                        <th>Blocks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedMatchupStats.playerStats.map((stat) => (
+                        <tr key={stat.player._id}>
+                          <td>
+                            {stat.player.firstName} {stat.player.lastName}
+                          </td>
+                          <td>{stat.team.name}</td>
+                          <td>{stat.points}</td>
+                          <td>{stat.assists}</td>
+                          <td>{stat.rebounds}</td>
+                          <td>{stat.steals}</td>
+                          <td>{stat.blocks}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
+
+{selectedTab === 'leaderboard' && (
+  <div className="leaderboard">
+    <h2>Player Statistics</h2>
+    <div className="controls">
+      <label>
+        Sort By:
+        <select value={sortField} onChange={(e) => setSortField(e.target.value)}>
+          <option value="points">Points</option>
+          <option value="assists">Assists</option>
+          <option value="rebounds">Rebounds</option>
+          <option value="steals">Steals</option>
+          <option value="blocks">Blocks</option>
+        </select>
+      </label>
+      <label>
+        Per Game:
+        <input
+          type="checkbox"
+          checked={perGame}
+          onChange={(e) => setPerGame(e.target.checked)}
+        />
+      </label>
+      <label>
+        Order:
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </label>
     </div>
+    <table className="stats-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Team</th>
+          <th>Games Played</th>
+          <th>{perGame ? 'Avg ' : 'Total '}Points</th>
+          <th>{perGame ? 'Avg ' : 'Total '}Assists</th>
+          <th>{perGame ? 'Avg ' : 'Total '}Rebounds</th>
+          <th>{perGame ? 'Avg ' : 'Total '}Steals</th>
+          <th>{perGame ? 'Avg ' : 'Total '}Blocks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {playerStats.map((player, index) => (
+          <tr key={player._id}>
+            <td>{index + 1}</td>
+            <td>
+              {player.firstName} {player.lastName}
+            </td>
+            <td>{player.team?.name || 'N/A'}</td>
+            <td>{player.stats?.gamesPlayed}</td>
+            <td>
+              {perGame
+                ? (player.perGameStats?.points || 0).toFixed(2)
+                : player.stats?.points}
+            </td>
+            <td>
+              {perGame
+                ? (player.perGameStats?.assists || 0).toFixed(2)
+                : player.stats?.assists}
+            </td>
+            <td>
+              {perGame
+                ? (player.perGameStats?.rebounds || 0).toFixed(2)
+                : player.stats?.rebounds}
+            </td>
+            <td>
+              {perGame
+                ? (player.perGameStats?.steals || 0).toFixed(2)
+                : player.stats?.steals}
+            </td>
+            <td>
+              {perGame
+                ? (player.perGameStats?.blocks || 0).toFixed(2)
+                : player.stats?.blocks}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+
+
+
+     
+
+   
+   
+    </div>
+  
   );
 }
