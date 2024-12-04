@@ -145,3 +145,17 @@
 .stats-table tr:nth-child(even) {
   background-color: #0056b3;
 }
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list h2 {
+  margin-bottom: 0rem;
+}
+
+.list-item {
+  border-bottom: 1px solid #fff;
+  padding-bottom: 1rem;
+}

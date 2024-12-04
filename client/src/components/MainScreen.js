@@ -478,9 +478,13 @@ const handleViewStats = (matchup) => {
           </strong>{' '}
           - {player.position} - Team: {player.team?.name || 'N/A'}
         </p>
+          <button onClick={() => handleViewPlayerStats(player)}>
+          {selectedPlayerStats && selectedPlayerStats._id === player._id
+            ? 'View Less'
+            : 'View Stats'}
+        </button>
         <button onClick={() => handleEdit(player, 'player')}>Edit</button>
-        {/* <button onClick={() => handleDelete(player._id, 'player')}>Delete</button> */}
-        <button onClick={() => handleViewPlayerStats(player)}>{`View ${selectedPlayerStats?._id === player?.id ? 'Less' : 'Stats' }`} </button>
+
 
         {selectedPlayerStats && selectedPlayerStats._id === player._id && (
           <div className="player-stats">
@@ -499,94 +503,98 @@ const handleViewStats = (matchup) => {
 )}
 
 {selectedTab === 'viewMatchups' && (
-        <div className="list">
-          <h2>Matchups</h2>
-          {matchups.map((matchup) => (
-            <div key={matchup._id} className="list-item">
-              <p>
-                <strong>
-                  {matchup.homeTeam?.name || 'N/A'} vs {matchup.awayTeam?.name || 'N/A'}
-                </strong>{' '}
-                - {new Date(matchup.date).toLocaleString()} at {matchup.location}
-              </p>
-              {matchup.simulated && (
-                <p>
-                  Score:{' '}
-                  {matchup.homeTeamScore > matchup.awayTeamScore ? (
-                    <strong>
-                      {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
-                    </strong>
-                  ) : (
-                    <>
-                      {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
-                    </>
-                  )}{' '}
-                  -{' '}
-                  {matchup.awayTeamScore > matchup.homeTeamScore ? (
-                    <strong>
-                      {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
-                    </strong>
-                  ) : (
-                    <>
-                      {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
-                    </>
-                  )}
-                </p>
-              )}
-              {!matchup.simulated && (
-                <>
-                  <button onClick={() => handleEdit(matchup, 'matchup')}>Edit</button>
-                  <button onClick={() => handleDelete(matchup._id, 'matchup')}>Delete</button>
-                </>
-              )}
-              {!matchup.simulated ? (
-                <button
-                  onClick={() => handleSimulate(matchup._id)}
-                  disabled={simulatingGameIds.includes(matchup._id)}
-                >
-                  {simulatingGameIds.includes(matchup._id) ? 'Loading...' : 'Simulate'}
-                </button>
-              ) : (
-                <button onClick={() => handleViewStats(matchup)}>View Stats</button>
-              )}
+  <div className="list">
+    <h2>Matchups</h2>
+    {matchups.map((matchup) => (
+      <div key={matchup._id} className="list-item">
+        <p>
+          <strong>
+            {matchup.homeTeam?.name || 'N/A'} vs {matchup.awayTeam?.name || 'N/A'}
+          </strong>{' '}
+          - {new Date(matchup.date).toLocaleString()} at {matchup.location}
+        </p>
+        {matchup.simulated && (
+          <p>
+            Score:{' '}
+            {matchup.homeTeamScore > matchup.awayTeamScore ? (
+              <strong>
+                {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
+              </strong>
+            ) : (
+              <>
+                {matchup.homeTeam?.name || 'N/A'} ({matchup.homeTeamScore})
+              </>
+            )}{' '}
+            -{' '}
+            {matchup.awayTeamScore > matchup.homeTeamScore ? (
+              <strong>
+                {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
+              </strong>
+            ) : (
+              <>
+                {matchup.awayTeam?.name || 'N/A'} ({matchup.awayTeamScore})
+              </>
+            )}
+          </p>
+        )}
+        {!matchup.simulated && (
+          <>
+            <button onClick={() => handleEdit(matchup, 'matchup')}>Edit</button>
+            <button onClick={() => handleDelete(matchup._id, 'matchup')}>Delete</button>
+          </>
+        )}
+        {!matchup.simulated ? (
+          <button
+            onClick={() => handleSimulate(matchup._id)}
+            disabled={simulatingGameIds.includes(matchup._id)}
+          >
+            {simulatingGameIds.includes(matchup._id) ? 'Loading...' : 'Simulate'}
+          </button>
+        ) : (
+          <button onClick={() => handleViewStats(matchup)}>
+            {selectedMatchupStats && selectedMatchupStats._id === matchup._id
+              ? 'View Less'
+              : 'View Stats'}
+          </button>
+        )}
 
-              {selectedMatchupStats && selectedMatchupStats._id === matchup._id && (
-                <div className="stats-table">
-                  <h3>Player Stats</h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Points</th>
-                        <th>Assists</th>
-                        <th>Rebounds</th>
-                        <th>Steals</th>
-                        <th>Blocks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedMatchupStats.playerStats.map((stat) => (
-                        <tr key={stat.player._id}>
-                          <td>
-                            {stat.player.firstName} {stat.player.lastName}
-                          </td>
-                          <td>{stat.team.name}</td>
-                          <td>{stat.points}</td>
-                          <td>{stat.assists}</td>
-                          <td>{stat.rebounds}</td>
-                          <td>{stat.steals}</td>
-                          <td>{stat.blocks}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+        {selectedMatchupStats && selectedMatchupStats._id === matchup._id && (
+          <div className="stats-table">
+            <h3>Player Stats</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Team</th>
+                  <th>Points</th>
+                  <th>Assists</th>
+                  <th>Rebounds</th>
+                  <th>Steals</th>
+                  <th>Blocks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedMatchupStats.playerStats.map((stat) => (
+                  <tr key={stat.player._id}>
+                    <td>
+                      {stat.player.firstName} {stat.player.lastName}
+                    </td>
+                    <td>{stat.team.name}</td>
+                    <td>{stat.points}</td>
+                    <td>{stat.assists}</td>
+                    <td>{stat.rebounds}</td>
+                    <td>{stat.steals}</td>
+                    <td>{stat.blocks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
 {selectedTab === 'leaderboard' && (
   <div className="leaderboard">
