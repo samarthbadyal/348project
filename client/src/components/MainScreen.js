@@ -480,7 +480,7 @@ const handleViewStats = (matchup) => {
         </p>
         <button onClick={() => handleEdit(player, 'player')}>Edit</button>
         {/* <button onClick={() => handleDelete(player._id, 'player')}>Delete</button> */}
-        <button onClick={() => handleViewPlayerStats(player)}>View Stats</button>
+        <button onClick={() => handleViewPlayerStats(player)}>{`View ${selectedPlayerStats?._id === player?.id ? 'Less' : 'Stats' }`} </button>
 
         {selectedPlayerStats && selectedPlayerStats._id === player._id && (
           <div className="player-stats">
