@@ -19,12 +19,7 @@ router.post(
   [
     check('name').trim().escape().notEmpty().withMessage('Team name is required.'),
     check('city').trim().escape().notEmpty().withMessage('City is required.'),
-    check('logoUrl')
-      .optional()
-      .isURL()
-      .withMessage('Invalid URL.')
-      .trim()
-      .escape(),
+    
   ],
   async (req, res) => {
     try {
@@ -32,8 +27,8 @@ router.post(
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const { name, city, logoUrl } = req.body;
-      const newTeam = new Team({ name, city, logoUrl });
+      const { name, city } = req.body;
+      const newTeam = new Team({ name, city });
       await newTeam.save();
       res.status(201).json(newTeam);
     } catch (error) {
@@ -49,12 +44,7 @@ router.put(
     check('id').isMongoId().withMessage('Invalid team ID').trim().escape(),
     check('name').optional().trim().escape(),
     check('city').optional().trim().escape(),
-    check('logoUrl')
-      .optional()
-      .isURL()
-      .withMessage('Invalid URL.')
-      .trim()
-      .escape(),
+   
   ],
   async (req, res) => {
     try {

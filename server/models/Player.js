@@ -18,7 +18,7 @@ const PlayerSchema = new mongoose.Schema(
       gamesPlayed: { type: Number, default: 0 },
     },
   },
-  { timestamps: true } // Automatically adds `createdAt` and `updatedAt`
+  { timestamps: true } 
 );
 
 // Indexes for efficient queries
