@@ -1,5 +1,5 @@
 const axios = require('axios');
-const API_URL = 'http://localhost:5001/api'; 
+const API_URL = 'http://localhost:5001/api';
 
 async function createTeam(name, city) {
   try {
@@ -29,11 +29,12 @@ async function createPlayer(firstName, lastName, position, team, heightCm, weigh
 }
 
 async function runTestScript() {
-  // Create two teams
+  // Create three teams
   const team1Id = await createTeam('Los Angeles Fakers', 'Los Angeles');
   const team2Id = await createTeam('Golden Steak Warriors', 'San Francisco');
+  const team3Id = await createTeam('Boston Sellticks', 'Boston');
 
-  if (!team1Id || !team2Id) {
+  if (!team1Id || !team2Id || !team3Id) {
     console.error('Failed to create teams. Exiting test script.');
     return;
   }
@@ -50,10 +51,19 @@ async function runTestScript() {
   // Define players for Team 2
   const team2Players = [
     { firstName: 'Stef', lastName: 'Carry', position: 'PG', heightCm: 188, weightLbs: 185, skill: 96 },
-    { firstName: 'Clay', lastName: 'Tons', position: 'SG', heightCm: 198, weightLbs: 215, skill: 90 },
+    { firstName: 'Buddy', lastName: 'Shield', position: 'SG', heightCm: 198, weightLbs: 215, skill: 90 },
     { firstName: 'Draymom', lastName: 'Mean', position: 'PF', heightCm: 198, weightLbs: 230, skill: 89 },
     { firstName: 'Andrew', lastName: 'Whiskens', position: 'SF', heightCm: 201, weightLbs: 197, skill: 85 },
     { firstName: 'Kevon', lastName: 'Mooney', position: 'C', heightCm: 206, weightLbs: 245, skill: 82 },
+  ];
+
+  // Define players for Team 3 (Boston Sellticks)
+  const team3Players = [
+    { firstName: 'Jason', lastName: 'Totem', position: 'SF', heightCm: 203, weightLbs: 210, skill: 94 },
+    { firstName: 'Jaylen', lastName: 'Brawn', position: 'SG', heightCm: 198, weightLbs: 220, skill: 90 },
+    { firstName: 'Chris', lastName: 'Porzingo', position: 'C', heightCm: 221, weightLbs: 240, skill: 88 },
+    { firstName: 'Drew', lastName: 'Vacation', position: 'PG', heightCm: 191, weightLbs: 200, skill: 87 },
+    { firstName: 'Derrick', lastName: 'Bright', position: 'SG', heightCm: 193, weightLbs: 190, skill: 85 },
   ];
 
   // Create players for Team 1
@@ -76,6 +86,19 @@ async function runTestScript() {
       player.lastName,
       player.position,
       team2Id,
+      player.heightCm,
+      player.weightLbs,
+      player.skill
+    );
+  }
+
+  // Create players for Team 3
+  for (const player of team3Players) {
+    await createPlayer(
+      player.firstName,
+      player.lastName,
+      player.position,
+      team3Id,
       player.heightCm,
       player.weightLbs,
       player.skill

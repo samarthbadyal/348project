@@ -120,6 +120,12 @@ const handleViewStats = (matchup) => {
     setEditId(null);
   };
 
+  useEffect(()=> {
+    fetchMatchups();
+    fetchPlayers();
+    fetchTeams();
+  }, [selectedTab]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -163,12 +169,19 @@ const handleViewStats = (matchup) => {
       } else {
         // Additional frontend validation for matchup
         if (selectedTab === 'matchup') {
+          if (!formData.homeTeam) {
+            setErrors({ homeTeam: 'Home team is required.' });
+            return;
+          }
+          if (!formData.awayTeam) {
+            setErrors({ awayTeam: 'Away team is required.' });
+            return;
+          }
           if (formData.homeTeam === formData.awayTeam) {
             setErrors({ awayTeam: 'Home team and away team must be different.' });
             return;
           }
         }
-
         // Frontend uniqueness check for team names
         if (selectedTab === 'team') {
           const existingTeam = teams.find((team) => team.name === formData.name);
